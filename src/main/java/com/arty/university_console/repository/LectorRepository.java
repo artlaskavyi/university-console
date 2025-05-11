@@ -1,4 +1,13 @@
 package com.arty.university_console.repository;
 
-public class LectorRepository {
+import com.arty.university_console.model.Lector;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+
+public interface LectorRepository extends JpaRepository<Lector, Long> {
+    @Query("SELECT l.fullName FROM Lector l WHERE LOWER(l.fullName) LIKE LOWER(CONCAT('%', :template, '%'))")
+    List<String> findFullNamesByTemplate(@Param("template") String template);
 }
