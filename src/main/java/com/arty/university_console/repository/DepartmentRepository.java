@@ -6,11 +6,13 @@ import com.arty.university_console.model.Lector;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
     @Query("SELECT l FROM Department d JOIN d.head l WHERE d.name = :name")
     Optional<Lector> findHeadByDepartmentName(@Param("name") String name);
@@ -24,4 +26,6 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
     @Query("SELECT COUNT(l.id) FROM Department d JOIN d.lectors l WHERE d.name = :name")
     Long countLectorsByDepartmentName(@Param("name") String name);
+
+    boolean existsByName(@Param("name") String name);
 }
