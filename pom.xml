@@ -11,7 +11,7 @@
 	<groupId>com.arty</groupId>
 	<artifactId>university-console</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Console application for university management</name>
+	<name>University app</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
