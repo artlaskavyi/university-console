@@ -1,6 +1,5 @@
 package com.arty.university_console.console;
 
-import com.arty.university_console.model.Degree;
 import com.arty.university_console.service.DepartmentService;
 import com.arty.university_console.service.LectorService;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,7 +9,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 @Component
 public class ConsoleUI {

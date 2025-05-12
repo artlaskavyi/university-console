@@ -2,7 +2,6 @@ package com.arty.university_console.service;
 
 import com.arty.university_console.dto.DegreeCountDTO;
 import com.arty.university_console.model.Degree;
-import com.arty.university_console.model.Department;
 import com.arty.university_console.model.Lector;
 import com.arty.university_console.repository.DepartmentRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,8 +35,8 @@ public class DepartmentService {
             counts.put(degree.name().toLowerCase(), 0L);
         }
         List<DegreeCountDTO> results = departmentRepository.countLectorsByDegree(departmentName);
-        for (DegreeCountDTO(Degree degree, Long count) : results) {
-            counts.put(degree.name().toLowerCase(), count);
+        for (DegreeCountDTO result : results) {
+            counts.put(result.degree().name().toLowerCase(), result.count());
         }
         return counts;
     }

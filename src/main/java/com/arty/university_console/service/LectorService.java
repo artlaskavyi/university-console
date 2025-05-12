@@ -1,7 +1,6 @@
 package com.arty.university_console.service;
 
 import com.arty.university_console.repository.LectorRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
