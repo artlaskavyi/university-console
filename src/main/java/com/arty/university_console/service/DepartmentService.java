@@ -9,10 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class DepartmentService {
@@ -31,16 +28,16 @@ public class DepartmentService {
                 .orElse(null);
     }
 
-    public Map<Degree, Long> getDepartmentStatistics(String departmentName) {
+    public Map<String, Long> getDepartmentStatistics(String departmentName) {
         validateDepartmentName(departmentName);
         ensureDepartmentExists(departmentName);
-        EnumMap<Degree, Long> counts = new EnumMap<>(Degree.class);
+        Map<String, Long> counts = new HashMap<>();
         for (Degree degree : Degree.values()) {
-            counts.put(degree, 0L);
+            counts.put(degree.name().toLowerCase(), 0L);
         }
         List<DegreeCountDTO> results = departmentRepository.countLectorsByDegree(departmentName);
         for (DegreeCountDTO(Degree degree, Long count) : results) {
-            counts.put(degree, count);
+            counts.put(degree.name().toLowerCase(), count);
         }
         return counts;
     }
