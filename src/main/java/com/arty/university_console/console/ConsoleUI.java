@@ -29,7 +29,7 @@ public class ConsoleUI {
 
         while (true) {
             System.out.println("Enter your command:\n" +
-                    "HEAD, STATISTICS, AVG_SALARY, EMPLOYEE_COUNT, SEARCH, EXIT (case insensitive)\n)");
+                    "HEAD, STATISTICS, AVG_SALARY, EMPLOYEE_COUNT, SEARCH, EXIT (case insensitive)");
             String input = scanner.nextLine().trim().toUpperCase();
 
             if(input.equalsIgnoreCase("exit")){
@@ -39,6 +39,7 @@ public class ConsoleUI {
 
             Command command = getCommandFromString(input);
             processCommand(command);
+            System.out.println();
         }
         scanner.close();
     }
