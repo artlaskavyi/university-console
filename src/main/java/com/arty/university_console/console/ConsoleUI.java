@@ -16,7 +16,6 @@ public class ConsoleUI {
     private final DepartmentService departmentService;
     private final LectorService lectorService;
     private final Scanner scanner;
-    private enum Command {HEAD, STATISTICS, AVG_SALARY, EMPLOYEE_COUNT, SEARCH, UNKNOWN};
 
     public ConsoleUI(DepartmentService departmentService, LectorService lectorService) {
         this.departmentService = departmentService;
@@ -28,56 +27,58 @@ public class ConsoleUI {
         System.out.println("Welcome to University Console");
 
         while (true) {
-            System.out.println("Enter your command:\n" +
-                    "HEAD, STATISTICS, AVG_SALARY, EMPLOYEE_COUNT, SEARCH, EXIT (case insensitive)");
-            String input = scanner.nextLine().trim().toUpperCase();
+            displayAllowedCommands();
+            System.out.println(CommandConstants.PROMPT_MESSAGE);
+            String input = scanner.nextLine().trim();
 
-            if(input.equalsIgnoreCase("exit")){
+            if (input.equalsIgnoreCase("exit")) {
                 System.out.println("Bye!");
                 break;
             }
 
-            Command command = getCommandFromString(input);
-            processCommand(command);
+            processInput(input);
             System.out.println();
         }
         scanner.close();
     }
 
-    private Command getCommandFromString(String commandString) {
-        try {
-            return Command.valueOf(commandString.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return Command.UNKNOWN;
-        }
+    private void displayAllowedCommands() {
+        System.out.println("Available commands:");
+        System.out.println("- " + CommandConstants.WHO_IS_HEAD_COMMAND + "{department_name}");
+        System.out.println("- " + CommandConstants.SHOW_STATISTICS_COMMAND + "{department_name}" + CommandConstants.STATISTICS_SUFFIX);
+        System.out.println("- " + CommandConstants.SHOW_AVG_SALARY_COMMAND + "{department_name}");
+        System.out.println("- " + CommandConstants.SHOW_EMPLOYEE_COUNT_COMMAND + "{department_name}");
+        System.out.println("- " + CommandConstants.GLOBAL_SEARCH_COMMAND + "{template}");
+        System.out.println("- exit");
     }
 
-    private void processCommand(Command command) {
-        try{
-            switch (command) {
-                case HEAD:
-                    System.out.println("Executing HEAD command...");
-                    handleHeadCommand();
-                    break;
-                case STATISTICS:
-                    System.out.println("Executing STATISTICS command...");
-                    handleStatisticsCommand();
-                    break;
-                case AVG_SALARY:
-                    System.out.println("Executing AVG_SALARY command...");
-                    handleAverageSalaryCommand();
-                    break;
-                case EMPLOYEE_COUNT:
-                    System.out.println("Executing EMPLOYEE_COUNT command...");
-                    handleEmployeeCountCommand();
-                    break;
-                case SEARCH:
-                    System.out.println("Executing SEARCH command...");
-                    handleSearchCommand();
-                    break;
-                case UNKNOWN:
-                    System.out.println("Unknown command. Please enter a valid command.");
-                    break;
+    private void processInput(String input) {
+
+        if (input == null || input.isBlank()) {
+            System.out.println("Input cannot be empty.");
+            return;
+        }
+
+        try {
+            if (input.startsWith(CommandConstants.WHO_IS_HEAD_COMMAND)) {
+                String departmentName = input.substring(CommandConstants.WHO_IS_HEAD_COMMAND.length()).trim();
+                handleHeadCommand(departmentName);
+            } else if (input.startsWith(CommandConstants.SHOW_STATISTICS_COMMAND) &&
+                    input.endsWith(CommandConstants.STATISTICS_SUFFIX) &&
+                    input.length() > CommandConstants.SHOW_STATISTICS_COMMAND.length() + CommandConstants.STATISTICS_SUFFIX.length() + 1) {
+                String departmentName = input.substring(CommandConstants.SHOW_STATISTICS_COMMAND.length(), input.indexOf(CommandConstants.STATISTICS_SUFFIX)).trim();
+                handleStatisticsCommand(departmentName);
+            } else if (input.startsWith(CommandConstants.SHOW_AVG_SALARY_COMMAND)) {
+                String departmentName = input.substring(CommandConstants.SHOW_AVG_SALARY_COMMAND.length()).trim();
+                handleAverageSalaryCommand(departmentName);
+            } else if (input.startsWith(CommandConstants.SHOW_EMPLOYEE_COUNT_COMMAND)) {
+                String departmentName = input.substring(CommandConstants.SHOW_EMPLOYEE_COUNT_COMMAND.length()).trim();
+                handleEmployeeCountCommand(departmentName);
+            } else if (input.startsWith(CommandConstants.GLOBAL_SEARCH_COMMAND)) {
+                String template = input.substring(CommandConstants.GLOBAL_SEARCH_COMMAND.length()).trim();
+                handleSearchCommand(template);
+            } else {
+                System.out.println("Unknown command. Please enter a valid command.");
             }
         } catch (EntityNotFoundException e) {
             System.out.println(e.getMessage());
@@ -86,25 +87,15 @@ public class ConsoleUI {
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
-
     }
 
-    private void handleHeadCommand() {
-        System.out.println("Enter the name of the department (case sensitive):");
-        String departmentName = scanner.nextLine().trim();
-
+    private void handleHeadCommand(String departmentName) {
         String headFullName = departmentService.getDepartmentHeadFullName(departmentName);
-        String s  = String.format("Head of %s department is %s", departmentName, headFullName);
-
-        System.out.println(s);
+        System.out.printf("Head of %s department is %s%n", departmentName, headFullName);
     }
 
-    private void handleStatisticsCommand() {
-        System.out.println("Enter the name of the department (case sensitive):");
-        String departmentName = scanner.nextLine().trim();
-
+    private void handleStatisticsCommand(String departmentName) {
         Map<String, Long> statistics = departmentService.getDepartmentStatistics(departmentName);
-
         for (Map.Entry<String, Long> entry : statistics.entrySet()) {
             String degreeName = entry.getKey();
             Long count = entry.getValue();
@@ -112,37 +103,22 @@ public class ConsoleUI {
         }
     }
 
-    private void handleAverageSalaryCommand() {
-        System.out.println("Enter the name of the department (case sensitive):");
-        String departmentName = scanner.nextLine().trim();
-
+    private void handleAverageSalaryCommand(String departmentName) {
         BigDecimal salary = departmentService.getDepartmentAverageSalary(departmentName);
-
-        String s = String.format("Average salary of %s department is %s", departmentName, salary);
-        System.out.println(s);
+        System.out.printf("The average salary of %s is %s%n", departmentName, salary);
     }
 
-    private void handleEmployeeCountCommand() {
-        System.out.println("Enter the name of the department (case sensitive):");
-        String departmentName = scanner.nextLine().trim();
-
-        Long employeeCount= departmentService.getDepartmentEmployeeCount(departmentName);
-
+    private void handleEmployeeCountCommand(String departmentName) {
+        Long employeeCount = departmentService.getDepartmentEmployeeCount(departmentName);
         System.out.println(employeeCount);
-
     }
 
-    private void handleSearchCommand() {
-        System.out.println("Enter the template to search for:");
-        String departmentName = scanner.nextLine().trim();
-
-        List<String> results = lectorService.performGlobalSearch(departmentName);
-
+    private void handleSearchCommand(String searchTemplate) {
+        List<String> results = lectorService.performGlobalSearch(searchTemplate);
         if (results.isEmpty()) {
             System.out.println("No lectors found matching the template.");
         } else {
-            String joinedResults = String.join(", ", results);
-            System.out.println("Matching lectors: " + joinedResults);
+            System.out.println(String.join(", ", results));
         }
     }
 
